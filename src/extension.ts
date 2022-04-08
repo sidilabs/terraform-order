@@ -32,7 +32,7 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 function isEmptyStr(str:string) {
-	return (!!str?.trim());
+	return (!str?.trim());
 }
 
 // this method is called when your extension is deactivated
