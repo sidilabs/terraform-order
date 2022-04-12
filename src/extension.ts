@@ -19,7 +19,20 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.showInformationMessage('Hello World from Terraform Order!');
 	});
 
+	disposable = vscode.commands.registerCommand('terraform-order.order', async () => {
+		const inputText = await vscode.window.showInputBox({
+			placeHolder: "Enter Full file path for variables files",
+			prompt: "Terraform variables file absolute path"
+		});
+
+		vscode.window.showInformationMessage("You typed: "+ inputText);
+	});
+
 	context.subscriptions.push(disposable);
+}
+
+function isEmptyStr(str:string) {
+	return (!str?.trim());
 }
 
 // this method is called when your extension is deactivated
