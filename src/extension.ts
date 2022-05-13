@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import * as fs from 'fs';
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -25,7 +26,28 @@ export function activate(context: vscode.ExtensionContext) {
 			prompt: "Terraform variables file absolute path"
 		});
 
-		vscode.window.showInformationMessage("You typed: "+ inputText);
+		if(typeof inputText === undefined) {
+			throw new Error("File cant be undefined"); 
+		}
+
+		vscode.window.showInformationMessage("Opening file: "+ inputText);
+
+		if(typeof inputText === typeof '') {
+			const file = fs.readFile(inputText!,  (err, data) => {
+				if(err) { 
+					throw err;
+				}
+
+				let arr = data.toString().replace(/\r\n/g,'\n').split(/(variable\s*"\S*"\s*{)/g);
+				arr = arr.filter(el => el.search(new RegExp(/(variable\s*"\S*"\s*{)/g)) !== -1);
+				vscode.window.showInformationMessage("qtd: "+arr.length);
+				arr.forEach(element => {
+					vscode.window.showInformationMessage("found elements: " + element);
+				});
+				
+			});
+		}
+		
 	});
 
 	context.subscriptions.push(disposable);
@@ -33,6 +55,10 @@ export function activate(context: vscode.ExtensionContext) {
 
 function isEmptyStr(str:string) {
 	return (!str?.trim());
+}
+
+function getvarName() {
+
 }
 
 // this method is called when your extension is deactivated
