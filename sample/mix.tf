@@ -76,3 +76,12 @@ aws_region           = "us-west-2"
 rest_api_domain_name = "example.com"
 rest_api_name        = "api-gateway-rest-api-openapi-example"
 rest_api_path        = "/path1"
+
+
+variable "tag_global_class_category" {
+  description = " {try to not break with this Carranza} MUST be only ONE of the following values -   SERVICE, OPERATION, ANALYTICS , SECURITY , QA, TEST, COMMON. Please also note the capitalization. Refer to https://mobilerndhub.sec.samsung.net/wiki/display/B2BOPS/1.3.8.4+Tagging+Guideline"
+  validation {
+    condition     = contains(["SERVICE", "OPERATION", "ANALYTICS", "SECURITY", "QA", "TEST", "COMMON"], var.tag_global_class_category)
+    error_message = "MUST be only ONE of the following values -   SERVICE, OPERATION, ANALYTICS , SECURITY , QA, TEST, COMMON. Please also note the capitalization. Refer to https://mobilerndhub.sec.samsung.net/wiki/display/B2BOPS/1.3.8.4+Tagging+Guideline."
+  }
+}

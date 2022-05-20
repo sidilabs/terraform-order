@@ -24,12 +24,12 @@ export function activate(context: vscode.ExtensionContext) {
     for (let i = initLine; i < strArray.length; i++) {
       let current = strArray[i];
       let blockData = null;
-      if (current.includes("{")) {
+      if (/\{\s*$/.test(current) || /\[\s*$/.test(current)) {
         blockData = readBlock(strArray, i + 1);
         i = blockData.endLine;
-      } else if (current.includes("}")) {
+      } else if (/^\s*\}/.test(current) || /^\s*\]/.test(current)) {
         return {
-          data: allData,
+          data: [...allData, current],
           endLine: i,
         };
       }
@@ -54,14 +54,22 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.window.showInformationMessage("Opening file: " + inputText);
 
     if (typeof inputText === typeof "") {
-      const file = fs.readFileSync(inputText);
+      const file = fs.readFileSync(inputText as string);
       let fileStr = file
         .toString()
         .replace(/\r\n/g, "\n")
-        .replace(/\{(.+)/g, "{\n$1");
+        .replace(/\n+\s*\[/g, " [")
+        .replace(/(\n\s*"?[^\["]+"?\s*=\s*[^"']*\[)([^\n]+)/g, "$1\n$2")
+        .replace(/\]([ ,\t]*)/g, "\n]$1")
+        .replace(/\{\s*\}/g, "{\n}") //empty object
+        .replace(/(\n\s*"?[^\["]+"?\s*=\s*\{)([^\n]+)\}([ \t,]*\n)$/g, "$1\n$2\n}$3"); //attr pointing to obj
+
+      // { asdasd = "sdasdas" }
+
       const fileStrArr = fileStr.split("\n").filter((line) => line.trim());
       const arrResult = [];
       const keywords = "variable|terraform|provider|data|resource|output";
+      console.log(fileStrArr);
       for (let i = 0; i < fileStrArr.length; i++) {
         const current = fileStrArr[i];
         if (new RegExp(`^\s*(${keywords}).*`, "g").test(current)) {
@@ -73,9 +81,10 @@ export function activate(context: vscode.ExtensionContext) {
         }
       }
       console.log(arrResult);
-			arrResult.forEach((element) => {
-          vscode.window.showInformationMessage("found elements: " + element.statement);
-        });
+      arrResult.forEach((element) => {
+        vscode.window.showInformationMessage("found elements: " + element.statement);
+      });
+    }
   });
 
   context.subscriptions.push(disposable);
