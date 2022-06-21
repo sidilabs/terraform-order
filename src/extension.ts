@@ -68,7 +68,7 @@ export function activate(context: vscode.ExtensionContext) {
 
       const fileStrArr = fileStr.split("\n").filter((line) => line.trim());
       const arrResult = [];
-      const keywords = "variable|terraform|provider|data|resource|output";
+      const keywords = "variable|terraform|provider|data|resource|output|[^=]+=[ \t]*\\{";
       console.log(fileStrArr);
       for (let i = 0; i < fileStrArr.length; i++) {
         const current = fileStrArr[i];
