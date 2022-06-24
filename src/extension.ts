@@ -10,15 +10,6 @@ export function activate(context: vscode.ExtensionContext) {
   // This line of code will only be executed once when your extension is activated
   console.log('Congratulations, your extension "terraform-order" is now active!');
 
-  // The command has been defined in the package.json file
-  // Now provide the implementation of the command with registerCommand
-  // The commandId parameter must match the command field in package.json
-  let disposable = vscode.commands.registerCommand("terraform-order.helloWorld", () => {
-    // The code you place here will be executed every time your command is executed
-    // Display a message box to the user
-    vscode.window.showInformationMessage("Hello World from Terraform Order!");
-  });
-
   const readBlock = (strArray: string[], initLine: number): any => {
     const allData = [];
     for (let i = initLine; i < strArray.length; i++) {
@@ -41,50 +32,43 @@ export function activate(context: vscode.ExtensionContext) {
     return {};
   };
 
-  disposable = vscode.commands.registerCommand("terraform-order.order", async () => {
-    const inputText = await vscode.window.showInputBox({
-      placeHolder: "Enter Full file path for variables files",
-      prompt: "Terraform variables file absolute path",
-    });
+  let disposable = vscode.commands.registerCommand("terraform-order.order", async () => {
+    const editor = vscode.window.activeTextEditor;
 
-    if (typeof inputText === undefined) {
-      throw new Error("File cant be undefined");
+    if (!editor) {
+      return; // no editor
     }
+    let inputText = editor.document;
+    const documentText = inputText.getText();
 
-    vscode.window.showInformationMessage("Opening file: " + inputText);
+    let fileStr = documentText
+      .replace(/\r\n/g, "\n")
+      .replace(/\n+\s*\[/g, " [")
+      .replace(/(\n\s*"?[^\["]+"?\s*=\s*[^"']*\[)([^\n]+)/g, "$1\n$2")
+      .replace(/\]([ ,\t]*)/g, "\n]$1")
+      .replace(/\{\s*\}/g, "{\n}") //empty object
+      .replace(/(\n\s*"?[^\["]+"?\s*=\s*\{)([^\n]+)\}([ \t,]*\n)$/g, "$1\n$2\n}$3"); //attr pointing to obj
 
-    if (typeof inputText === typeof "") {
-      const file = fs.readFileSync(inputText as string);
-      let fileStr = file
-        .toString()
-        .replace(/\r\n/g, "\n")
-        .replace(/\n+\s*\[/g, " [")
-        .replace(/(\n\s*"?[^\["]+"?\s*=\s*[^"']*\[)([^\n]+)/g, "$1\n$2")
-        .replace(/\]([ ,\t]*)/g, "\n]$1")
-        .replace(/\{\s*\}/g, "{\n}") //empty object
-        .replace(/(\n\s*"?[^\["]+"?\s*=\s*\{)([^\n]+)\}([ \t,]*\n)$/g, "$1\n$2\n}$3"); //attr pointing to obj
+    // { asdasd = "sdasdas" }
 
-      // { asdasd = "sdasdas" }
-
-      const fileStrArr = fileStr.split("\n").filter((line) => line.trim());
-      const arrResult = [];
-      const keywords = "variable|terraform|provider|data|resource|output";
-      console.log(fileStrArr);
-      for (let i = 0; i < fileStrArr.length; i++) {
-        const current = fileStrArr[i];
-        if (new RegExp(`^\s*(${keywords}).*`, "g").test(current)) {
-          const block = readBlock(fileStrArr, i + 1);
-          i = block.endLine;
-          arrResult.push({ statement: current, block: block.data });
-        } else if (/^\s*\w+\s*=\s*\S+$/.test(current)) {
-          arrResult.push({ statement: current, block: [] });
-        }
+    const fileStrArr = fileStr.split("\n").filter((line) => line.trim());
+    const arrResult = [];
+    const keywords = "variable|terraform|provider|data|resource|output";
+    console.log(fileStrArr);
+    for (let i = 0; i < fileStrArr.length; i++) {
+      const current = fileStrArr[i];
+      if (new RegExp(`^\s*(${keywords}).*`, "g").test(current)) {
+        const block = readBlock(fileStrArr, i + 1);
+        i = block.endLine;
+        arrResult.push({ statement: current, block: block.data });
+      } else if (/^\s*\w+\s*=\s*\S+$/.test(current)) {
+        arrResult.push({ statement: current, block: [] });
       }
-      console.log(arrResult);
-      arrResult.forEach((element) => {
-        vscode.window.showInformationMessage("found elements: " + element.statement);
-      });
     }
+    console.log(arrResult);
+    arrResult.forEach((element) => {
+      vscode.window.showInformationMessage("found elements: " + element.statement);
+    });
   });
 
   context.subscriptions.push(disposable);
