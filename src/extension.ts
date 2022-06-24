@@ -66,6 +66,9 @@ export function activate(context: vscode.ExtensionContext) {
       }
     }
     console.log(arrResult);
+    arrResult.sort(function(x,y) {
+      return x.statement.localeCompare(y.statement);
+    });
     arrResult.forEach((element) => {
       vscode.window.showInformationMessage("found elements: " + element.statement);
     });
