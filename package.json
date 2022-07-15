@@ -10,19 +10,20 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:terraform-order.helloWorld",
 		"onCommand:terraform-order.order"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "terraform-order.helloWorld",
-				"title": "Hello World"
-			},
+				"command": "terraform-order.order",
+				"title": "Order terraform variables"
+			}
+		],
+		"keybindings":[
 			{
 				"command": "terraform-order.order",
-				"title": "Hello Order"
+				"key": "alt+shift+o"
 			}
 		]
 	},
