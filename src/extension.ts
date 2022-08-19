@@ -1,7 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
+import * as fs from "fs";
 import * as vscode from "vscode";
-
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -62,15 +62,42 @@ export function activate(context: vscode.ExtensionContext) {
         arrResult.push({ statement: current, block: [] });
       }
     }
-
-    console.log(arrResult);
     arrResult.forEach((element) => {
       vscode.window.showInformationMessage("found elements: " + element.statement);
     });
 
+    //rewrite file
+    const fd = fs.openSync(editor.document.fileName, "w");
+    let filePos = 0;
+    writeBlocks(fd, filePos, arrResult);
+    fs.closeSync(fd);
+
     context.subscriptions.push(disposable);
   });
 
+}
+
+function writeBlocks(fileDescriptor:  any, filePos: number, blockArray : any){
+  if (blockArray === undefined){
+    return 0;
+  }
+
+  if (blockArray.length === 1) {
+    filePos += fs.writeSync(fileDescriptor, blockArray[0].toString()+"\n", filePos, 'utf8');
+    return filePos;
+  }
+
+  blockArray.forEach((element : any) => {
+    if (typeof element === 'string') {
+      filePos += fs.writeSync(fileDescriptor, element+"\n", filePos, 'utf8');
+    }else {
+      filePos += fs.writeSync(fileDescriptor, element.statement.toString()+"\n", filePos, 'utf8');
+      if (element.block !== undefined){
+        filePos = writeBlocks(fileDescriptor, filePos, element.block);
+      }
+    }
+  });
+  return filePos;
 }
 
 function isEmptyStr(str: string) {
