@@ -18,12 +18,20 @@
 			{
 				"command": "terraform-order.order",
 				"title": "Order terraform variables"
+			},
+			{
+				"command": "terraform-order.rename-variable",
+				"title": "Rename terraform variable"
 			}
 		],
 		"keybindings":[
 			{
 				"command": "terraform-order.order",
 				"key": "alt+shift+o"
+			},
+			{
+				"command": "terraform-order.rename-variable",
+				"key": "alt+shift+,"
 			}
 		]
 	},

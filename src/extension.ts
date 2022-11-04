@@ -108,3 +108,71 @@ function getvarName() { }
 
 // this method is called when your extension is deactivated
 export function deactivate() { }
+
+let disposable = vscode.commands.registerCommand("terraform-order.rename-variable", async () => {
+  const editor = vscode.window.activeTextEditor;
+
+  if (!editor) {
+    return; // no editor
+  }
+
+  // Get current line content in vscode extension
+  const line = editor.document.lineAt(editor.selection.active.line); // may be used later to resource rename along with variable
+
+  const selectedVariableName = editor.document.getText(editor.selection);
+
+  const newVariableName = await vscode.window.showInputBox({
+        placeHolder: "New variable name"
+  });
+
+  if (!newVariableName){
+    return; //canceled operation
+  }
+
+  let inputText = editor.document;
+  const documentText = inputText.getText().split(/\r?\n/);
+
+  const resourceType = checkResourceDataOrVariable(line.text, selectedVariableName);
+  var replacedFile = "";
+  if (resourceType === 1){
+    replacedFile = findAndReplace(inputText.getText(), selectedVariableName, newVariableName);
+  }
+
+  console.log(replacedFile);
+
+
+  // documentText.forEach((line) => {
+  //     var match = checkResourceDataOrVariable(line, selectedVariableName);
+
+  //     if (match=== 1){
+
+  //     }
+  // });
+
+});
+
+
+function findAndReplace(file:string, oldName:string, newName:string){
+  let variableDefRegex = new RegExp("^variable \"" + oldName + "[^a-zA-Z0-9]*");
+  let variableRefRegex = new RegExp("*var\." + oldName + ".*");
+
+  file.replace(variableDefRegex, "variable \""+newName+"\"");
+  file.replace(variableRefRegex, "var."+newName);
+
+  return file;
+}
+
+// check if selected name is from a variable or resource
+// return 0 if resource or data source
+// return 1 if variable
+// return 2 if local
+// return -1 if none of the above
+function checkResourceDataOrVariable(line:string, name:string){
+  let variableDefRegex = new RegExp("^variable \"" + name + "[^a-zA-Z0-9]*");
+  let variableRefRegex = new RegExp("*var\." + name + ".*");
+
+  if (variableDefRegex.test(line) || variableRefRegex.test(line)){
+    return 1;
+  }
+  return -1;
+}
