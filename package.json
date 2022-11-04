@@ -18,6 +18,10 @@
 			{
 				"command": "terraform-order.order",
 				"title": "Order terraform variables"
+			},
+			{
+				"command": "terraform-order.scan-project",
+				"title": "Scan Project for resources"
 			}
 		],
 		"keybindings":[

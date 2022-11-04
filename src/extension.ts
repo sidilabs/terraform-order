@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as fs from "fs";
 import * as vscode from "vscode";
+import * as path from "path";
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -108,3 +109,41 @@ function getvarName() { }
 
 // this method is called when your extension is deactivated
 export function deactivate() { }
+
+
+function scanProject(){
+  const editor = vscode.window.activeTextEditor;
+  if (!editor){
+    return;
+  }
+
+  console.log(editor.document.uri);
+  var resources: string[] = [];
+  const resourcesPattern = /^variable \".*\"|^resource \".*\" \".*\"|^data \".*\" \".*\" /;
+  // const resourceDefPattern = /^resource \".*\" \".*\"/;
+  // const dataSourceDefPattern = /^data \".*\" \".*\"/;
+  fs.readdir(editor.document.uri.fsPath,  (err, files: string[]) =>{
+    files.forEach(file =>{
+      fs.readFile(file, 'utf8', function(err, data){
+        // const variableMatches = [...data.matchAll(variableDefPattern)];
+        const resourceMatches = [...data.matchAll(resourcesPattern)];
+        // const dataSourceMatches = [...data.matchAll(dataSourceDefPattern)];
+        resourceMatches.forEach(resource =>{
+          resources.concat(resource);
+        });
+    });
+    });
+  });
+
+  var  formattedResources: string[] = [];
+
+  resources.forEach(element =>{
+      var formattedElement = element;
+      formattedElement.replace(/^variable |^resource |^data /,"");
+      formattedElement.replace("\"", "");
+      formattedElement.replace(" ",".");
+      formattedResources.concat(formattedElement);
+  });
+
+
+}
