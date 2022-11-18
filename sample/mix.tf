@@ -41,9 +41,13 @@ resource "aws_vpc" "cloudhsm_v2_vpc" {
   cidr_block = "10.0.0.0/16"
 
   tags = {
-    Name = "example-aws_cloudhsm_v2_cluster"
+    Name = "eeeeeexample-aws_cloudhsm_v2_cluster"
   }
 }
+
+Sample "qwe\"we" "12312321" { a={
+  x =2
+} }
 
 resource "aws_subnet" "cloudhsm_v2_subnets" {
   count                   = 2
@@ -73,8 +77,11 @@ resource "aws_cloudhsm_v2_hsm" "cloudhsm_v2_hsm" {
 
 data "aws_cloudhsm_v2_cluster" "cluster" {
   cluster_id = aws_cloudhsm_v2_cluster.cloudhsm_v2_cluster.cluster_id
-  depends_on = [aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm]
+  depends_on = f([
+    aws_cloudhsm_v2_hsm.cloudhsm_v2_hsm
+    ], [])
 }
+
 
 aws_region           = "us-west-2"
 rest_api_domain_name = "example.com"
@@ -88,4 +95,5 @@ variable "tag_global_class_category" {
     condition     = contains(["SERVICE", "OPERATION", "ANALYTICS", "SECURITY", "QA", "TEST", "COMMON"], var.tag_global_class_category)
     error_message = "MUST be only ONE of the following values -   SERVICE, OPERATION, ANALYTICS , SECURITY , QA, TEST, COMMON. Please also note the capitalization. Refer to https://mobilerndhub.sec.samsung.net/wiki/display/B2BOPS/1.3.8.4+Tagging+Guideline."
   }
+  value = " asdasd "
 }
