@@ -48,36 +48,12 @@ export function activate(context: vscode.ExtensionContext) {
       .replace(/\r\n/g, '\n');
 
     const fileStrArr = fileStr.split('\n').filter((line) => line.trim());
-    console.log(readArrayLines(fileStrArr));
+    const arrResult = readArrayLines(fileStrArr);
+    console.log(arrResult);
 
-    // const arrResult = [];
-    // const keywords = 'variable|terraform|provider|data|resource|output|[^=]+=[ \t]*\\{';
-
-    // const regexIdentifier = '[a-zA-Z](-?[a-zA-Z0-9])*';
-    // const regexStringLit = '"([^"]|\\")+"';
-
-    // const regexBlock = new RegExp(`[ \t]*${regexIdentifier}[ \t"-\w]*\{[ \t]*\n`);
-
-    // const regexOneLineBlock = new RegExp(`[ \t]*${regexIdentifier}[ \t]*\{[ \t]*${regexIdentifier}`);
-
-    // let openedBlockCounter = 0;
-
-    // // console.log(fileStrArr);
-    // for (let i = 0; i < fileStrArr.length; i++) {
-    //   const current = fileStrArr[i];
-    //   // console.log('i: ' + i + ' => ' + current);
-    //   if (openedBlockCounter == 0 && regexBlock.test(current)) {
-    //     openedBlockCounter++;
-    //     const block = readBlock(fileStrArr, i + 1);
-    //     i = block.endLine;
-    //     arrResult.push({ statement: current, block: block.data });
-    //   } else if (/^\s*\w+\s*=\s*\S+$/.test(current)) {
-    //     arrResult.push({ statement: current, block: [] });
-    //   }
-    // }
-    // arrResult.forEach((element) => {
-    //   vscode.window.showInformationMessage('found elements: ' + element.statement);
-    // });
+    arrResult.forEach((element) => {
+      vscode.window.showInformationMessage('found elements: ' + element.line.join(' '));
+    });
 
     // //rewrite file
     // const fd = fs.openSync(editor.document.fileName, 'w');

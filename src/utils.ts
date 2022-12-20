@@ -133,7 +133,18 @@ function componentsArrayToBlocksArray(
   return result;
 }
 
-export function readArrayLines(arrLines: string[], ref = { index: 0, stack: 0 }) {
+type Statement = {
+  separator: string;
+  value: string;
+};
+
+type LineResult = {
+  line: Statement[];
+  tab: number;
+  lineBlock?: LineResult[];
+};
+
+export function readArrayLines(arrLines: string[], ref = { index: 0, stack: 0 }): LineResult[] {
   let readArrayStack = [] as string[];
 
   let stackNum = 0;
