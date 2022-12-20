@@ -9,7 +9,7 @@ variable "availability_zone_names" {
 }
 
 availability_zone_names  = {
-    type = ["br-test1", "br-test1"],
+  type = ["br-test1", "br-test1"],
 }
 
 variable "docker_ports" {
