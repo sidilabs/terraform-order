@@ -1,0 +1,26 @@
+[
+    {
+        "keyword": "default",
+        "required": false
+    },
+    {
+        "keyword": "type",
+        "required": true
+    },
+    {
+        "keyword": "description",
+        "required": false
+    },
+    {
+        "keyword": "validation",
+        "required": false
+    },
+    {
+        "keyword": "sensitive",
+        "required": false
+    },
+    {
+        "keyword": "nullable",
+        "required": false
+    }
+]

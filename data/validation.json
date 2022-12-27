@@ -1,0 +1,10 @@
+[
+    {
+        "keyword": "condition",
+        "required": true
+    },
+    {
+        "keyword": "error_message",
+        "required": false
+    }
+]

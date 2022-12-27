@@ -1,0 +1,10 @@
+[
+    {
+        "keyword": "source",
+        "required": false
+    },
+    {
+        "keyword": "alias",
+        "required": false
+    }
+]

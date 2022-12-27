@@ -1,0 +1,29 @@
+[
+    {
+        "keyword": "string"
+    },
+    {
+        "keyword": "number"
+    },
+    {
+        "keyword": "bool"
+    },
+    {
+        "keyword": "list"
+    },
+    {
+        "keyword": "set"
+    },
+    {
+        "keyword": "map"
+    },
+    {
+        "keyword": "object"
+    },
+    {
+        "keyword": "tuple"
+    },
+    {
+        "keyword": "any"
+    }
+]

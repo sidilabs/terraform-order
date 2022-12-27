@@ -1,0 +1,8 @@
+[
+    "variable",
+    "terraform",
+    "provider",
+    "data",
+    "resource",
+    "output"
+]

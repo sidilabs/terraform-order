@@ -142,6 +142,7 @@ type LineResult = {
   line: Statement[];
   tab: number;
   lineBlock?: LineResult[];
+  mainType: string;
 };
 
 export function readArrayLines(arrLines: string[], ref = { index: 0, stack: 0 }): LineResult[] {
