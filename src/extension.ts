@@ -1,13 +1,16 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import * as fs from "fs";
-import * as vscode from "vscode";
+import * as fs from 'fs';
+import * as vscode from 'vscode';
+
+import { readArrayLines } from './utils';
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-  // Use the console to output diagnostic information (console.log) and errors (console.error)
+  // Use the console to output diagnostic information (// console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
-  console.log('Congratulations, your extension "terraform-order" is now active!');
+  // console.log('Congratulations, your extension "terraform-order" is now active!');
 
   const readBlock = (strArray: string[], initLine: number): any => {
     const allData = [];
@@ -31,7 +34,7 @@ export function activate(context: vscode.ExtensionContext) {
     return {};
   };
 
-  let disposable = vscode.commands.registerCommand("terraform-order.order", async () => {
+  let disposable = vscode.commands.registerCommand('terraform-order.order', async () => {
     const editor = vscode.window.activeTextEditor;
 
     if (!editor) {
@@ -41,58 +44,43 @@ export function activate(context: vscode.ExtensionContext) {
     const documentText = inputText.getText();
 
     let fileStr = documentText
-      .replace(/\r\n/g, "\n")
-      .replace(/\n+\s*\[/g, " [")
-      .replace(/(\n\s*"?[^\["]+"?\s*=\s*[^"']*\[)([^\n]+)/g, "$1\n$2")
-      .replace(/\]([ ,\t]*)/g, "\n]$1")
-      .replace(/\{\s*\}/g, "{\n}") //empty object
-      .replace(/(\n\s*"?[^\["]+"?\s*=\s*\{)([^\n]+)\}([ \t,]*\n)$/g, "$1\n$2\n}$3"); //attr pointing to obj
+      //replace new line widows style with unix style
+      .replace(/\r\n/g, '\n');
 
-    const fileStrArr = fileStr.split("\n").filter((line) => line.trim());
-    const arrResult = [];
-    const keywords = "variable|terraform|provider|data|resource|output|[^=]+=[ \t]*\\{";
-    console.log(fileStrArr);
-    for (let i = 0; i < fileStrArr.length; i++) {
-      const current = fileStrArr[i];
-      if (new RegExp(`^\s*(${keywords}).*`, "g").test(current)) {
-        const block = readBlock(fileStrArr, i + 1);
-        i = block.endLine;
-        arrResult.push({ statement: current, block: block.data });
-      } else if (/^\s*\w+\s*=\s*\S+$/.test(current)) {
-        arrResult.push({ statement: current, block: [] });
-      }
-    }
+    const fileStrArr = fileStr.split('\n').filter((line) => line.trim());
+    const arrResult = readArrayLines(fileStrArr);
+    console.log(arrResult);
+
     arrResult.forEach((element) => {
-      vscode.window.showInformationMessage("found elements: " + element.statement);
+      vscode.window.showInformationMessage('found elements: ' + element.line.join(' '));
     });
 
-    //rewrite file
-    const fd = fs.openSync(editor.document.fileName, "w");
-    let filePos = 0;
-    writeBlocks(fd, filePos, arrResult);
-    fs.closeSync(fd);
+    // //rewrite file
+    // const fd = fs.openSync(editor.document.fileName, 'w');
+    // let filePos = 0;
+    // writeBlocks(fd, filePos, arrResult);
+    // fs.closeSync(fd);
 
     context.subscriptions.push(disposable);
   });
-
 }
 
-function writeBlocks(fileDescriptor:  any, filePos: number, blockArray : any){
-  if (blockArray === undefined){
+function writeBlocks(fileDescriptor: any, filePos: number, blockArray: any) {
+  if (blockArray === undefined) {
     return 0;
   }
 
   if (blockArray.length === 1) {
-    filePos += fs.writeSync(fileDescriptor, blockArray[0].toString()+"\n", filePos, 'utf8');
+    filePos += fs.writeSync(fileDescriptor, blockArray[0].toString() + '\n', filePos, 'utf8');
     return filePos;
   }
 
-  blockArray.forEach((element : any) => {
+  blockArray.forEach((element: any) => {
     if (typeof element === 'string') {
-      filePos += fs.writeSync(fileDescriptor, element+"\n", filePos, 'utf8');
-    }else {
-      filePos += fs.writeSync(fileDescriptor, element.statement.toString()+"\n", filePos, 'utf8');
-      if (element.block !== undefined){
+      filePos += fs.writeSync(fileDescriptor, element + '\n', filePos, 'utf8');
+    } else {
+      filePos += fs.writeSync(fileDescriptor, element.statement.toString() + '\n', filePos, 'utf8');
+      if (element.block !== undefined) {
         filePos = writeBlocks(fileDescriptor, filePos, element.block);
       }
     }
@@ -104,7 +92,7 @@ function isEmptyStr(str: string) {
   return !str?.trim();
 }
 
-function getvarName() { }
+function getvarName() {}
 
 // this method is called when your extension is deactivated
-export function deactivate() { }
+export function deactivate() {}
