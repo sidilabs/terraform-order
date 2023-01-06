@@ -5,7 +5,6 @@ import * as vscode from 'vscode';
 
 import { readArrayLines } from './utils';
 import { writeBlocks } from './writer';
-var Trie = require('mnemonist/trie');
 
 
 // this method is called when your extension is activated
@@ -39,7 +38,7 @@ export function activate(context: vscode.ExtensionContext) {
     //rewrite file
     const fd = fs.openSync(editor.document.fileName, 'w');
     let filePos = 0;
-    console.log('writing blocks')
+    console.log('writing blocks');
     writeBlocks(fd, filePos, arrResult);
     fs.closeSync(fd);
 
@@ -47,11 +46,7 @@ export function activate(context: vscode.ExtensionContext) {
   });
 }
 
-function isEmptyStr(str: string) {
-  return !str?.trim();
-}
 
-function getvarName() {}
 
 // this method is called when your extension is deactivated
 export function deactivate() {}
