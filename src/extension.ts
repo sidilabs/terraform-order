@@ -15,28 +15,6 @@ export function activate(context: vscode.ExtensionContext) {
   // This line of code will only be executed once when your extension is activated
   // console.log('Congratulations, your extension "terraform-order" is now active!');
 
-  const readBlock = (strArray: string[], initLine: number): any => {
-    const allData = [];
-    for (let i = initLine; i < strArray.length; i++) {
-      let current = strArray[i];
-      let blockData = null;
-      if (/\{\s*$/.test(current) || /\[\s*$/.test(current)) {
-        blockData = readBlock(strArray, i + 1);
-        i = blockData.endLine;
-      } else if (/^\s*\}/.test(current) || /^\s*\]/.test(current)) {
-        return {
-          data: [...allData, current],
-          endLine: i,
-        };
-      }
-      allData.push({
-        statement: current,
-        block: blockData?.data,
-      });
-    }
-    return {};
-  };
-
   let disposable = vscode.commands.registerCommand('terraform-order.order', async () => {
     const editor = vscode.window.activeTextEditor;
 
