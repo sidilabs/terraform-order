@@ -4,6 +4,8 @@ import * as fs from 'fs';
 import * as vscode from 'vscode';
 
 import { readArrayLines } from './utils';
+import { writeBlocks } from './writer';
+
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -11,28 +13,6 @@ export function activate(context: vscode.ExtensionContext) {
   // Use the console to output diagnostic information (// console.log) and errors (console.error)
   // This line of code will only be executed once when your extension is activated
   // console.log('Congratulations, your extension "terraform-order" is now active!');
-
-  const readBlock = (strArray: string[], initLine: number): any => {
-    const allData = [];
-    for (let i = initLine; i < strArray.length; i++) {
-      let current = strArray[i];
-      let blockData = null;
-      if (/\{\s*$/.test(current) || /\[\s*$/.test(current)) {
-        blockData = readBlock(strArray, i + 1);
-        i = blockData.endLine;
-      } else if (/^\s*\}/.test(current) || /^\s*\]/.test(current)) {
-        return {
-          data: [...allData, current],
-          endLine: i,
-        };
-      }
-      allData.push({
-        statement: current,
-        block: blockData?.data,
-      });
-    }
-    return {};
-  };
 
   let disposable = vscode.commands.registerCommand('terraform-order.order', async () => {
     const editor = vscode.window.activeTextEditor;
@@ -55,44 +35,18 @@ export function activate(context: vscode.ExtensionContext) {
       vscode.window.showInformationMessage('found elements: ' + element.line.join(' '));
     });
 
-    // //rewrite file
-    // const fd = fs.openSync(editor.document.fileName, 'w');
-    // let filePos = 0;
-    // writeBlocks(fd, filePos, arrResult);
-    // fs.closeSync(fd);
+    //rewrite file
+    const fd = fs.openSync(editor.document.fileName, 'w');
+    let filePos = 0;
+    console.log('writing blocks');
+    writeBlocks(fd, filePos, arrResult);
+    fs.closeSync(fd);
 
     context.subscriptions.push(disposable);
   });
 }
 
-function writeBlocks(fileDescriptor: any, filePos: number, blockArray: any) {
-  if (blockArray === undefined) {
-    return 0;
-  }
 
-  if (blockArray.length === 1) {
-    filePos += fs.writeSync(fileDescriptor, blockArray[0].toString() + '\n', filePos, 'utf8');
-    return filePos;
-  }
-
-  blockArray.forEach((element: any) => {
-    if (typeof element === 'string') {
-      filePos += fs.writeSync(fileDescriptor, element + '\n', filePos, 'utf8');
-    } else {
-      filePos += fs.writeSync(fileDescriptor, element.statement.toString() + '\n', filePos, 'utf8');
-      if (element.block !== undefined) {
-        filePos = writeBlocks(fileDescriptor, filePos, element.block);
-      }
-    }
-  });
-  return filePos;
-}
-
-function isEmptyStr(str: string) {
-  return !str?.trim();
-}
-
-function getvarName() {}
 
 // this method is called when your extension is deactivated
 export function deactivate() {}
