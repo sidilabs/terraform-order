@@ -1,0 +1,18 @@
+[
+    {
+        "keyword": "condition",
+        "required": false
+    },
+    {
+        "keyword": "error_message",
+        "required": false
+    },
+    {
+        "keyword": "postcondition",
+        "required": false
+    },
+    {
+        "keyword": "precondition",
+        "required": false
+    }
+]

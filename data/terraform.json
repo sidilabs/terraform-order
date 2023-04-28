@@ -1,0 +1,26 @@
+[
+    {
+        "keyword": "cloud",
+        "required": false
+    },
+    {
+        "keyword": "backend",
+        "required": false
+    },
+    {
+        "keyword": "required_version",
+        "required": false
+    },
+    {
+        "keyword": "required_providers",
+        "required": false
+    },
+    {
+        "keyword": "experiments",
+        "required": false
+    },
+    {
+        "keyword": "provider_meta",
+        "required": false
+    }
+]

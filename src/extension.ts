@@ -1,18 +1,18 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as fs from 'fs';
 import * as vscode from 'vscode';
+import { setStorageData } from './reservedKeywords';
 
 import { readArrayLines } from './utils';
 import { writeBlocks } from './writer';
 
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-  // Use the console to output diagnostic information (// console.log) and errors (console.error)
-  // This line of code will only be executed once when your extension is activated
-  // console.log('Congratulations, your extension "terraform-order" is now active!');
+  const versionKey = '1.0.0';
+  context.globalState.setKeysForSync([versionKey]);
+  context.globalState.update('keywordsMapping', undefined); // TODO: Remove this before submitting PR
+  if (context.globalState.get('keywordsMapping') === undefined || context.globalState.get('reservedKeywords') === undefined) {
+    setStorageData(context);
+  }
 
   let disposable = vscode.commands.registerCommand('terraform-order.order', async () => {
     const editor = vscode.window.activeTextEditor;
@@ -20,15 +20,35 @@ export function activate(context: vscode.ExtensionContext) {
     if (!editor) {
       return; // no editor
     }
+
+    const currentVersion = context.extension.packageJSON.version;
+    const lastVersionShown = context.globalState.get(versionKey);
+    let mainKeywordsMapping: Map<string, { keyword: string; required: boolean }[]>;
+    let reservedMainKeywords: string[];
+    if (currentVersion !== lastVersionShown) {
+      context.globalState.update(versionKey, currentVersion);
+      [mainKeywordsMapping, reservedMainKeywords] = setStorageData(context);
+    } else {
+      mainKeywordsMapping = context.globalState.get('keywordsMapping')!;
+      reservedMainKeywords = context.globalState.get('reservedKeywords')!;
+    }
+
     let inputText = editor.document;
     const documentText = inputText.getText();
 
     let fileStr = documentText
-      //replace new line widows style with unix style
+      //replace new line windows style with unix style
       .replace(/\r\n/g, '\n');
 
     const fileStrArr = fileStr.split('\n').filter((line) => line.trim());
-    const arrResult = readArrayLines(fileStrArr);
+    let arrResult = readArrayLines(fileStrArr);
+    for (let i = 0; i < arrResult.length; i++) {
+      if (reservedMainKeywords.includes(arrResult[i].line[0].value)) {
+        arrResult[i].mainType = arrResult[i].line[0].value;
+      } else {
+        arrResult[i].mainType = "attribution";
+      }
+    }
     console.log(arrResult);
 
     arrResult.forEach((element) => {
@@ -46,7 +66,4 @@ export function activate(context: vscode.ExtensionContext) {
   });
 }
 
-
-
-// this method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }
