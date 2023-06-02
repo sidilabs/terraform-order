@@ -186,6 +186,7 @@ export function readArrayLines(arrLines: string[], ref = { index: 0, stack: 0 })
           line.push(result.closer);
         }
         objResult.line = line;
+        objResult.tab = tab - 1;
 
         return arrayResult;
       }
