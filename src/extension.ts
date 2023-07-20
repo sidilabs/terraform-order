@@ -44,9 +44,6 @@ export function activate(context: vscode.ExtensionContext) {
 
     const fileStrArr = fileStr.split('\n').filter((line) => line.trim());
     let arrResult = readArrayLines(fileStrArr);
-    let variableList: Array<object> = [];
-    let resourceList: Array<object> = [];
-    let datasourceList: Array<object> = [];
     let typesMap = new Map<string, number[]>();
     for (let i = 0; i < arrResult.length; i++) {
       if (reservedMainKeywords.includes(arrResult[i].line[0].value)) {
@@ -72,16 +69,16 @@ export function activate(context: vscode.ExtensionContext) {
       position: number
     }
 
-    let dataList: any[] = []
-    let varList: any[] = []
-    let resList: any[] = []
+    let dataList: any[] = [];
+    let varList: any[] = [];
+    let resList: any[] = [];
     
     if(typesMap.has("data")) {
       for (let i = 0; i < typesMap.get("data")!.length; i++) {
         const item: orderingArray = {
           element: arrResult[i],
           position: i
-        }
+        };
         dataList.push(item);
       }
 
@@ -95,7 +92,7 @@ export function activate(context: vscode.ExtensionContext) {
         const item: orderingArray = {
           element: arrResult[i],
           position: i
-        }
+        };
         varList.push(item);
       }
 
@@ -109,7 +106,7 @@ export function activate(context: vscode.ExtensionContext) {
         const item: orderingArray = {
           element: arrResult[i],
           position: i
-        }
+        };
         resList.push(item);
       }
 
@@ -117,7 +114,8 @@ export function activate(context: vscode.ExtensionContext) {
         return d1.element.line[2].toLowerCase().localeCompare(d2.element.line[2].toLowerCase());
       });
     }
-
+    
+    
     
 
     arrResult.forEach((element) => {
