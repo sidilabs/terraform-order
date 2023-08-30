@@ -52,7 +52,7 @@ export function activate(context: vscode.ExtensionContext) {
         arrResult[i].mainType = "attribution";
       }
 
-      let currValue: Array<any> = []
+      let currValue: Array<any> = [];
 
       if(typesMap.has(arrResult[i].mainType)) {
         currValue.push(typesMap.get(arrResult[i].mainType));
@@ -64,7 +64,7 @@ export function activate(context: vscode.ExtensionContext) {
     }
     console.log(arrResult);
 
-    type orderingArray = {
+    type OrderingArray = {
       element: any,
       position: number
     }
@@ -75,7 +75,7 @@ export function activate(context: vscode.ExtensionContext) {
     
     if(typesMap.has("data")) {
       for (let i = 0; i < typesMap.get("data")!.length; i++) {
-        const item: orderingArray = {
+        const item: OrderingArray = {
           element: arrResult[i],
           position: i
         };
@@ -89,7 +89,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     if(typesMap.has("variable")) {
       for (let i = 0; i < typesMap.get("variable")!.length; i++) {
-        const item: orderingArray = {
+        const item: OrderingArray = {
           element: arrResult[i],
           position: i
         };
@@ -103,7 +103,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     if(typesMap.has("resource")) {
       for (let i = 0; i < typesMap.get("resource")!.length; i++) {
-        const item: orderingArray = {
+        const item: OrderingArray = {
           element: arrResult[i],
           position: i
         };
