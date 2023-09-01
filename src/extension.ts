@@ -104,7 +104,6 @@ export function activate(context: vscode.ExtensionContext) {
           position: i
         };
         varList.push(item);
-        console.log(item);
       });
 
       varList.sort((d1, d2) => {
@@ -125,19 +124,47 @@ export function activate(context: vscode.ExtensionContext) {
         return d1.element.line[2].value.toLowerCase().localeCompare(d2.element.line[2].value.toLowerCase());
       });
     }
-    
-    
-    
-
+     
     arrResult.forEach((element) => {
       vscode.window.showInformationMessage('found elements: ' + element.line.join(' '));
     });
 
     //rewrite file
+    let burnedIndex = new Array<number>();
     const fd = fs.openSync(editor.document.fileName, 'w');
     let filePos = 0;
     console.log('writing blocks');
-    writeBlocks(fd, filePos, arrResult);
+    console.log('writing data...');
+    dataList.forEach(el => {
+      burnedIndex.push(el.position);
+      filePos = writeBlocks(fd, filePos, [arrResult[el.position]]);
+    });
+
+    varList.forEach(el => {
+      burnedIndex.push(el.position);
+      filePos = writeBlocks(fd, filePos, [arrResult[el.position]]);
+    });
+
+    resList.forEach(el => {
+      burnedIndex.push(el.position);
+      filePos = writeBlocks(fd, filePos, [arrResult[el.position]]);
+    });
+  
+    function getDifference(a : number[], b : number[]) {
+      return a.filter(element => {
+        return !b.includes(element);
+      });
+    }
+    
+    const difference = [
+      ...getDifference(burnedIndex, [...Array(arrResult.length).keys()]),
+      ...getDifference([...Array(arrResult.length).keys()], burnedIndex)
+    ];
+
+    difference.forEach(index => {
+      filePos = writeBlocks(fd, filePos, [arrResult[index]]);
+    });
+    
     fs.closeSync(fd);
 
     context.subscriptions.push(disposable);
