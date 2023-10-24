@@ -9,13 +9,17 @@ export type ElementIndex = {
 
 export class Orderer {
 
-    constructor() { }
+    protected typesMap: Map<string, Array<number>>;
 
-    public fillOrderedArray(typesMap: Map<string, Array<number>>, arrOrigin: []): Map<string, Array<ElementIndex>> {
+    constructor(typesMap: Map<string, Array<number>>) { 
+        this.typesMap = typesMap;
+    }
+
+    public segregateOrderedTypes(arrOrigin: any[]): Map<string, Array<ElementIndex>> {
         let orderList = new Map<string, Array<ElementIndex>>();
         Orderer.elementsToFetch().forEach(el => {
             orderList.set(el.element,
-                this.orderArrayByKey(typesMap, el.element, arrOrigin, el.position));
+                this.orderArrayByKey(el.element, arrOrigin, el.position));
         });
 
         return orderList;
@@ -28,7 +32,7 @@ export class Orderer {
                 position: 2
             },
             {
-                element: "variables",
+                element: "variable",
                 position: 1
             },
             {
@@ -38,11 +42,11 @@ export class Orderer {
         ];
     }
 
-    protected orderArrayByKey(typesMap: Map<string, Array<number>>, elementKey: string, arrOrigin: [], elementSortIndex: number): any[] {
+    protected orderArrayByKey(elementKey: string, arrOrigin: any[], elementSortIndex: number): any[] {
         let resultList: any[] = [];
-        if (typesMap.has(elementKey)) {
+        if (this.typesMap.has(elementKey)) {
             resultList = this.sortListByTFElement(
-                this.iterateElementArray(typesMap, elementKey, arrOrigin),
+                this.iterateElementArray(elementKey, arrOrigin),
                 elementSortIndex
             );
         }
@@ -56,9 +60,9 @@ export class Orderer {
         });
     }
 
-    protected iterateElementArray(typesMap: Map<string, Array<number>>, elementKey: string, arrOrigin: []): any[] {
+    protected iterateElementArray(elementKey: string, arrOrigin: any[]): any[] {
         let resultList: any[] = [];
-        typesMap.get(elementKey)!.forEach(i => {
+        this.typesMap.get(elementKey)!.forEach(i => {
             const item: ElementIndex = {
                 element: arrOrigin[i],
                 position: i
