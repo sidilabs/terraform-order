@@ -1,6 +1,7 @@
 
 import { writeBlocks } from './writer';
 import * as fs from 'fs';
+import * as tfTypes from './terraformTypesEnum';
 
 export type ElementIndex = {
     element: any,
@@ -11,7 +12,7 @@ export class Orderer {
 
     protected typesMap: Map<string, Array<number>>;
 
-    constructor(typesMap: Map<string, Array<number>>) { 
+    constructor(typesMap: Map<string, Array<number>>) {
         this.typesMap = typesMap;
     }
 
@@ -28,15 +29,15 @@ export class Orderer {
     public static elementsToFetch(): ElementIndex[] {
         return [
             {
-                element: "data",
+                element: tfTypes.elementTypeEnum.DATA,
                 position: 2
             },
             {
-                element: "variable",
+                element: tfTypes.elementTypeEnum.VARIABLE,
                 position: 1
             },
             {
-                element: "resource",
+                element: tfTypes.elementTypeEnum.RESOURCE,
                 position: 2
             }
         ];
