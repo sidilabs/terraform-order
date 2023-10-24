@@ -4,6 +4,7 @@ import { setStorageData } from './reservedKeywords';
 
 import { readArrayLines } from './utils';
 import { writeBlocks } from './writer';
+import * from './orderer';
 import { types } from 'util';
 import { stringify } from 'querystring';
 
