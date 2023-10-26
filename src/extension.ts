@@ -53,7 +53,6 @@ export function activate(context: vscode.ExtensionContext) {
       let currValue: Array<any> = [];
 
       if (typesMap.has(arrResult[i].mainType)) {
-        console.log("Map content to be retrieved: ", typesMap.get(arrResult[i].mainType));
         currValue = currValue.concat(typesMap.get(arrResult[i].mainType));
       }
 

@@ -46,7 +46,7 @@ export class Orderer {
     protected orderArrayByKey(elementKey: string, arrOrigin: any[], elementSortIndex: number): any[] {
         let resultList: any[] = [];
         if (this.typesMap.has(elementKey)) {
-            resultList = this.sortListByTFElement(
+            resultList = this.sortListByTfElement(
                 this.iterateElementArray(elementKey, arrOrigin),
                 elementSortIndex
             );
@@ -55,7 +55,7 @@ export class Orderer {
         return resultList;
     }
 
-    protected sortListByTFElement(unsortedList: any[], index: number): any[] {
+    protected sortListByTfElement(unsortedList: any[], index: number): any[] {
         return unsortedList.sort((d1, d2) => {
             return d1.element.line[index].value.toLowerCase().localeCompare(d2.element.line[index].value.toLowerCase());
         });
