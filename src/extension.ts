@@ -1,9 +1,9 @@
-import * as fs from 'fs';
 import * as vscode from 'vscode';
 import { setStorageData } from './reservedKeywords';
 
 import { readArrayLines } from './utils';
-import { writeBlocks } from './writer';
+import * as orderer from './orderer';
+import { elementTypeEnum as typesEnum } from './terraformTypesEnum';
 
 
 export function activate(context: vscode.ExtensionContext) {
@@ -42,25 +42,34 @@ export function activate(context: vscode.ExtensionContext) {
 
     const fileStrArr = fileStr.split('\n').filter((line) => line.trim());
     let arrResult = readArrayLines(fileStrArr);
+    let typesMap = new Map<string, Array<number>>();
     for (let i = 0; i < arrResult.length; i++) {
       if (reservedMainKeywords.includes(arrResult[i].line[0].value)) {
         arrResult[i].mainType = arrResult[i].line[0].value;
       } else {
         arrResult[i].mainType = "attribution";
       }
+
+      let currValue: Array<any> = [];
+
+      if (typesMap.has(arrResult[i].mainType)) {
+        currValue = currValue.concat(typesMap.get(arrResult[i].mainType));
+      }
+
+      currValue.push(i);
+      typesMap.set(arrResult[i].mainType, currValue);
+
     }
     console.log(arrResult);
 
-    arrResult.forEach((element) => {
-      vscode.window.showInformationMessage('found elements: ' + element.line.join(' '));
-    });
-
-    //rewrite file
-    const fd = fs.openSync(editor.document.fileName, 'w');
-    let filePos = 0;
-    console.log('writing blocks');
-    writeBlocks(fd, filePos, arrResult);
-    fs.closeSync(fd);
+    let ord = new orderer.Orderer(typesMap);
+    let orderedTypeLists = ord.segregateOrderedTypes(arrResult);
+    orderer.OrderedWriter.writeListsToFiles(
+      [typesEnum.DATA, typesEnum.VARIABLE, typesEnum.RESOURCE],
+      orderedTypeLists,
+      arrResult,
+      editor.document.fileName
+    );
 
     context.subscriptions.push(disposable);
   });
