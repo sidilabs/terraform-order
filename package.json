@@ -2,6 +2,11 @@
 	"name": "terraform-order",
 	"displayName": "Terraform Order",
 	"description": "Tool to order variables in terraform code.",
+	"icon": "./artifacts/images/tforder-logo.png",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/sidilabs/terraform-order"
+	},
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.63.0"
