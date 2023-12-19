@@ -22,6 +22,9 @@ No requirements.
 3. In the upper bar, type `order`.
 4. The current file will be overwritten.
 
+### keyboard shortcut 
+- order a file: go to the file and press `alt` + `shift` + `o`
+
 ## Known Issues
 No issues for now
 
